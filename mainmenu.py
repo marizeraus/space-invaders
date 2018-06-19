@@ -2,7 +2,6 @@ from PPlay.window import *
 from PPlay.gameimage import *
 import jogo
 
-
 def ranking(janela):
     mouse = Window.get_mouse()
     janela.clear()
@@ -14,6 +13,13 @@ def ranking(janela):
     back2 = GameImage('images/back button2.png')
     back.set_position(193,600)
     back2.set_position(193,600)
+    arq=open('ranking.txt', 'r')
+    vet=[]
+    for linha in arq:
+        linha = linha.split()
+        linha[0] = int(linha[0])
+        vet.append(linha)
+    vet.sort(reverse=True)
     while True:
         janela.update()
         rankk.draw()
@@ -23,6 +29,9 @@ def ranking(janela):
                 inicio(janela)
         else:
             back.draw()
+        for i in range(len(vet)):
+            janela.draw_text('%s %d'%(vet[i][1], vet[i][0]), 60, 150+30*i, 30,(200,200,200), 'Arial', False, False)
+    arq.close()
 
 
 def dificuldade(janela, dif):
@@ -89,7 +98,7 @@ def dificuldade(janela, dif):
         if mouse.is_over_object(start_button):
             start_button2.draw()
             if mouse.is_button_pressed((1)):
-                jogo.game(dif)
+                jogo.game(dif, 1, 3)
         else:
             start_button.draw()
 
@@ -127,7 +136,7 @@ def inicio(janela):
             start_button2.set_position(193,320)
             start_button2.draw()
             if mouse.is_button_pressed((1)):
-                jogo.game(dif)
+                jogo.game(dif, 1, 3)
         else:
             start_button.draw()
         if mouse.is_over_object(dif_button):
