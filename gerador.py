@@ -10,7 +10,7 @@ def generate_shots(dif):
     if dif==1:
         for i in range(150):
             shots.append(Sprite('images/shot.png', frames=1))
-        count_tiros=150
+        count_tiros=50
     elif dif==2:
         for i in range(100):
             shots.append(Sprite('images/shot.png', frames=1))
@@ -21,46 +21,23 @@ def generate_shots(dif):
         count_tiros=75
     return shots, count_tiros
 
-def randomize_monsters(monsters, dif):
-    print(len(monsters))
-    print(len(monsters[1]))
-    monsters2=[]
-    for j in range(dif*8):
-        linha=[]
-        for i in range(6):
-            z=random.randint(0,30)
-            linha.append(monsters[j][z])
-        monsters2.append(linha)
-        print(len(linha))
-    print(monsters2)
-    return monsters2
 
-def generate_monsters(dif):
+def generate_monsters(fase):
     monsters=[]
     for j in range(6):
         linha=[]
         for i in range(10):
-            linha.append(Sprite('images/monster1 sprite.png', 2))
+            if fase==1:
+                linha.append(Sprite('images/monster1 sprite.png', 2))
+            elif fase==2:
+                linha.append(Sprite('images/monster2 sprite.png', 2))
+            elif fase==3:
+                linha.append(Sprite('images/monster3 sprite.png', 2))
+            elif fase==4:
+                linha.append(Sprite('images/monster4 sprite.png', 2))
+            elif fase==5:
+                linha.append(Sprite('images/monster5 sprite.png', 2))
+            elif fase==6:
+                linha.append(Sprite('images/monster6 sprite.png', 2))
         monsters.append(linha)
-        #linha=[]
-        #for i in range(11):
-         #   linha.append(Sprite('images/monster2 sprite.png', 2))
-#        monsters.append(linha)
-  #      linha=[]
- #       for i in range(11):
-   #         linha.append(Sprite('images/monster3 sprite.png', 2))
-    #    monsters.append(linha)
-#        linha=[]
- #       for i in range(11):
-  #          linha.append(Sprite('images/monster4 sprite.png', 2))
-   #     monsters.append(linha)
-   #     linha=[]
-   #     for i in range(11):
-   #         linha.append(Sprite('images/monster5 sprite.png', 2))
-   #     monsters.append(linha)
-   #     linha=[]
-   #     for i in range(11):
-   #         linha.append(Sprite('images/monster6 sprite.png', 2))
-   #     monsters.append(linha)
-    #    linha=[]
     return monsters
