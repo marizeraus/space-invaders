@@ -3,10 +3,13 @@ from PPlay.gameobject import *
 from PPlay.gameimage import *
 from PPlay.sprite import *
 import gerador
+import random
 
 WINDOW_HEIGHT = 700
 WINDOW_WIDTH = 630
 pontuacao = 0
+
+
 
 def move_ship(ship, teclado, time):
     #funcao para movimentar a nave seguindo o input do teclado
@@ -42,7 +45,7 @@ def move_monsters(monsters, virou, count_turn, monster_speed, time, fase):
     for i in range(len(monsters)):
         for j in range(len(monsters[i])):
             if virou and count_turn==0:
-                monsters[i][j].y+=10
+                monsters[i][j].y+=17
             monsters[i][j].x+=monster_speed*time*fase/2
 
     return count_turn, virou, monster_speed
@@ -83,11 +86,11 @@ def clean_shots(tiros_dados):
         else:
             count+=1
 
-def shoot(tiros_disponiveis, tiros_dados, ship):
+def shoot(tiros_disponiveis, tiros_dados, object):
     if len(tiros_disponiveis)>0:
         tiros_dados.append(tiros_disponiveis[0])
         tiros_disponiveis.pop(0)
-        tiros_dados[-1].set_position(ship.x+ship.width/2-1.5, ship.y-ship.height/3)
+        tiros_dados[-1].set_position(object.x+object.width/2-1.5, object.y-object.height/3)
         tiros_dados[-1].draw()
 
 
@@ -110,6 +113,32 @@ def kill_monster(monsters, tiros_dados, i):
                 break
 
 
+def move_shot_monster(tiros_dados, time, ship, vidas):
+    clean_shots(tiros_dados)
+    for i in range(len(tiros_dados)):
+        tiros_dados[i].y-=200*time
+        tiros_dados[i].draw()
+        stop_shot(tiros_dados , i)
+        vidas = kill_ship(ship,tiros_dados, i, vidas)
+        i+=1
+    return vidas
+
+
+
+def kill_ship(ship, tiros_dados, i, vidas):
+    if tiros_dados[i].collided(ship):
+        tiros_dados[i].y=100000
+        vidas-=1
+    return vidas
+
+
+def end_game():
+    arq=open('ranking.txt', 'a')
+    nome=input()
+    pont=str(pontuacao)+' '+nome+'/n'
+    arq.close()
+
+
 def game(dif, fase, vidas):
     janela = Window(630,700)
     janela.clear()
@@ -124,12 +153,16 @@ def game(dif, fase, vidas):
     tiros_disponiveis, contagem_de_tiros = gerador.generate_shots(dif)
     ship = GameImage('images/ship.png')
     ship.set_position(janela.width / 2 - ship.width, janela.height - ship.height - 10)
-
+    tiros_dados_monstros = []
+    tiros_disponiveis_monstros, contagem_de_tiros_monstro = gerador.generate_shots_monsters(dif)
+    gameover = GameImage('images/game over.png')
+    gameover.set_position(WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
     #variaveis para serem usadas durante o jogo
     virou = False
     count_turn = 0
     foi = False
     count_shoot = 0
+    count_monster_shoot = 0
 
     for j in range(len(monsters)):
         for i in range(len(monsters[j])):
@@ -140,6 +173,7 @@ def game(dif, fase, vidas):
         fundo.draw()
         ship.draw()
         time = janela.delta_time()
+        count_monster_shoot+=janela.delta_time()
         for i in range(len(monsters)):
             for j in range(len(monsters[i])):
                 monsters[i][j].draw()
@@ -153,18 +187,23 @@ def game(dif, fase, vidas):
             if count_shoot>0.4:
                 foi = False
                 count_shoot=0
+        if count_monster_shoot>3:
+            x=random.randint(0,len(monsters)-1)
+            y=random.randint(0,len(monsters[x])-1)
+            shoot(tiros_disponiveis_monstros, tiros_dados_monstros, monsters[x][y])
         if len(tiros_dados)>0:
             move_shot(tiros_dados,time, monsters)
+        if len(tiros_dados_monstros)>0:
+            vidas = move_shot_monster(tiros_dados_monstros,time, ship, vidas)
         move_ship(ship, teclado, time)
         count_turn, virou, monster_speed = move_monsters(monsters,virou, count_turn, monster_speed, time, fase)
         if len(monsters)==0:
             if fase==6:
-                win()
+                end_game()
             else:
                 game(dif, fase+1, vidas)
             break
-    if vidas==0:
-        arq=open('ranking.txt', 'a')
-        nome=input()
-        pont=str(pontuacao)+' '+nome+'/n'
-        arq.close()
+        if vidas==0 or monsters[-1][0].y+monsters[1][0].height>=ship.y:
+            end_game()
+            gameover.draw()
+
