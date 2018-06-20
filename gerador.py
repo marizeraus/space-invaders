@@ -44,7 +44,7 @@ def generate_monsters(fase):
     f1_3_x = 3
     f1_3_y = 6
     f3_6_x = 6
-    f3_6_y = 11
+    f3_6_y = 9
     if fase<4:
         x=f1_3_x
         y=f1_3_y

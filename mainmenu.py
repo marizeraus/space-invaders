@@ -103,8 +103,17 @@ def dificuldade(janela, dif):
             start_button.draw()
 
 
+def write_pontuacao(pontuacao):
+    arq=open('ranking.txt', 'a')
+    nome=input()
+    pont=str(pontuacao)+' '+nome+' /n'
+    print('pontuacao')
+    arq.write(pont)
+    arq.close()
+
+
 def inicio(janela):
-    janela.clear
+    janela.clear()
     janela.set_title('Menu')
     janela.set_background_color((0,0,0))
     titulo = GameImage('images/logo.png')
@@ -136,7 +145,9 @@ def inicio(janela):
             start_button2.set_position(193,320)
             start_button2.draw()
             if mouse.is_button_pressed((1)):
-                jogo.game(dif, 1, 3)
+                pontuacao = jogo.game(dif, 1, 3)
+                write_pontuacao(pontuacao)
+                ranking(janela)
         else:
             start_button.draw()
         if mouse.is_over_object(dif_button):
